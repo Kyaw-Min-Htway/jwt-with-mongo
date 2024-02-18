@@ -1,0 +1,11 @@
+POST http://localhost:3000/register
+Content-Type: application/json
+
+{
+    "email" : "kyawminhtway099@gmail.com",
+    "password" : "066813"
+}
+
+###
+
+GET http://localhost:3000/protected
