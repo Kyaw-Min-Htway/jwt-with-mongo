@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
@@ -13,7 +15,7 @@ mongoose.connect('mongodb://localhost:27017/myapp', { useNewUrlParser: true, use
 //User Schema
 const UserSchema = new mongoose.Schema({
     email: { type: String, unique: true, required: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true, required: true }
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -24,13 +26,19 @@ app.post('/register', async (req, res) => {
         const { email, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({ email, password: hashedPassword });
+        const accessToken = generateAccessToken({ email: user.email, password: user.password });
         await user.save();
-        res.status(201).send('User registered successfully');
+        res.json({ accessToken: accessToken });
     } catch (error){
         console.error(error);
         res.status(500).send('Error registering user');
     }
+    
 });
+
+function generateAccessToken(user){
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15s' })
+}
 
 //Login route
 app.post('/login', async(req, res) => {
@@ -44,7 +52,7 @@ app.post('/login', async(req, res) => {
         if(!isPasswordValid) {
             return res.status(401).send('Invalid email or password');
         }
-        const token = jwt.sign({ email: user.email }, 'secret-key', { expiresIn: '10mins'});
+        const token = jwt.sign({ email: user.email }, process.env.ACCESS_TOKEN_SECRET , { expiresIn: '60s'});
         res.json({ token });
     } catch (error) {
         console.error(error);
@@ -62,7 +70,7 @@ function authenticateToken(req, res, next) {
     const token = authHeader && authHeader.split('')[1];
     if (token == null) return res.sendStatus(401);
 
-    jwt.verify(token, 'secret-key', (err, user) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if(err) return res.sendStatus(403);
         req.user = user;
         next();
