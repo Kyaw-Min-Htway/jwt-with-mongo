@@ -2,10 +2,21 @@ POST http://localhost:3000/register
 Content-Type: application/json
 
 {
-    "email" : "khinmyatmonkyaw@gmail.com",
-    "password" : "066813khin"
+    "email" : "aunglin@gmail.com",
+    "password" : "066813aunglin"
+}
+
+###
+
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "email" : "aunglin@gmail.com",
+    "password" : "066813aunglin"
 }
 
 ###
 
 GET http://localhost:3000/protected
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF1bmdsaW5AZ21haWwuY29tIiwiaWF0IjoxNzA4NDQxMjk3fQ.minsHq2u3pokI3qz1F_mQ02oK9xWB_mF0_Ol9pNohMM
